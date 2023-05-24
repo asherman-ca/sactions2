@@ -1,4 +1,5 @@
 'use client'
+import { useTransition } from 'react'
 
 type TodoItemProps = {
 	id: string
@@ -8,6 +9,8 @@ type TodoItemProps = {
 }
 
 export function TodoItem({ id, title, complete, toggleTodo }: TodoItemProps) {
+	let [isPending, startTransition] = useTransition()
+
 	return (
 		<li className='flex gap-1 items-center'>
 			<input
@@ -15,11 +18,16 @@ export function TodoItem({ id, title, complete, toggleTodo }: TodoItemProps) {
 				type='checkbox'
 				className='cursor-pointer peer'
 				defaultChecked={complete}
-				onChange={(e) => toggleTodo(id, e.target.checked)}
+				onChange={(e) =>
+					startTransition(() => toggleTodo(id, e.target.checked))
+				}
+				disabled={isPending}
 			/>
 			<label
 				htmlFor={id}
-				className='cursor-pointer peer-checked:line-through peer-checked:text-slate-500'
+				className={`cursor-pointer peer-checked:line-through peer-checked:text-slate-500 ${
+					isPending && '!text-red-500'
+				}`}
 			>
 				{title}
 			</label>
